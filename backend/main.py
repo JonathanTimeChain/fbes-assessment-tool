@@ -148,7 +148,7 @@ def register(response: Response, user_data: UserCreate, db: Session = Depends(ge
     db.commit()
     
     token = create_access_token({"sub": user.id})
-    response.set_cookie(key="access_token", value=token, httponly=True, max_age=60*60*24*30)
+    response.set_cookie(key="access_token", value=token, httponly=True, max_age=60*60*24*30, path="/", samesite="lax")
     return {"message": "Registration successful", "token": token, "user": {"email": user.email, "name": user.name}}
 
 @app.post("/api/auth/login")
@@ -166,7 +166,7 @@ def login(response: Response, user_data: UserLogin, db: Session = Depends(get_db
     db.commit()
     
     token = create_access_token({"sub": user.id})
-    response.set_cookie(key="access_token", value=token, httponly=True, max_age=60*60*24*30)
+    response.set_cookie(key="access_token", value=token, httponly=True, max_age=60*60*24*30, path="/", samesite="lax")
     return {"message": "Login successful", "token": token, "user": {"email": user.email, "name": user.name}}
 
 @app.post("/api/auth/logout")

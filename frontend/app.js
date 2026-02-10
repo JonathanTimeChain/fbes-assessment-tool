@@ -264,6 +264,10 @@ async function handleCreateAssessment(e) {
             assessmentResponses = {};
             showPage('assessment');
             renderCategory();
+        } else {
+            const errData = await res.json().catch(() => ({}));
+            console.error('Create assessment failed:', res.status, errData);
+            alert('Failed to create assessment: ' + (errData.detail || res.statusText));
         }
     } catch (e) {
         console.error('Create assessment error:', e);
