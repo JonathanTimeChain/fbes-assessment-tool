@@ -139,6 +139,20 @@ def require_auth(user: Optional[User] = Depends(get_current_user)):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     return user
 
+# Debug endpoint
+from fastapi import Request
+
+@app.get("/api/debug/auth")
+async def debug_auth(request: Request, credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)):
+    headers = dict(request.headers)
+    return {
+        "has_credentials": credentials is not None,
+        "credentials_scheme": credentials.scheme if credentials else None,
+        "token_preview": credentials.credentials[:20] + "..." if credentials else None,
+        "auth_header": headers.get("authorization", "NOT FOUND"),
+        "all_headers": list(headers.keys())
+    }
+
 # --- Auth Endpoints ---
 
 @app.post("/api/auth/register")
