@@ -6,7 +6,7 @@ import os
 from datetime import datetime, timedelta
 from typing import Optional, List, Dict, Any
 
-from fastapi import FastAPI, Depends, HTTPException, status, Response, Cookie
+from fastapi import FastAPI, Depends, HTTPException, status, Response, Cookie, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, FileResponse
@@ -105,7 +105,6 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-from fastapi import Header
 
 def get_current_user(
     authorization: Optional[str] = Header(None),
