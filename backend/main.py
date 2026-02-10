@@ -126,9 +126,10 @@ def get_current_user(
         return None
     try:
         payload = jwt.decode(auth_token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: int = payload.get("sub")
-        if user_id is None:
+        user_id_str = payload.get("sub")
+        if user_id_str is None:
             return None
+        user_id = int(user_id_str)
         user = db.query(User).filter(User.id == user_id).first()
         return user
     except JWTError:
@@ -138,20 +139,6 @@ def require_auth(user: Optional[User] = Depends(get_current_user)):
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     return user
-
-# Debug endpoint
-from fastapi import Request
-
-@app.get("/api/debug/auth")
-async def debug_auth(request: Request, credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)):
-    headers = dict(request.headers)
-    return {
-        "has_credentials": credentials is not None,
-        "credentials_scheme": credentials.scheme if credentials else None,
-        "token_preview": credentials.credentials[:20] + "..." if credentials else None,
-        "auth_header": headers.get("authorization", "NOT FOUND"),
-        "all_headers": list(headers.keys())
-    }
 
 # --- Auth Endpoints ---
 
@@ -177,7 +164,7 @@ def register(response: Response, user_data: UserCreate, db: Session = Depends(ge
     db.add(event)
     db.commit()
     
-    token = create_access_token({"sub": user.id})
+    token = create_access_token({"sub": str(user.id)})
     response.set_cookie(key="access_token", value=token, httponly=True, max_age=60*60*24*30, path="/", samesite="lax")
     return {"message": "Registration successful", "token": token, "user": {"email": user.email, "name": user.name}}
 
@@ -195,7 +182,7 @@ def login(response: Response, user_data: UserLogin, db: Session = Depends(get_db
     db.add(event)
     db.commit()
     
-    token = create_access_token({"sub": user.id})
+    token = create_access_token({"sub": str(user.id)})
     response.set_cookie(key="access_token", value=token, httponly=True, max_age=60*60*24*30, path="/", samesite="lax")
     return {"message": "Login successful", "token": token, "user": {"email": user.email, "name": user.name}}
 
