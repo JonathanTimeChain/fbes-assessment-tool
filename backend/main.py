@@ -126,7 +126,7 @@ def require_auth(user: Optional[User] = Depends(get_current_user)):
 # --- Auth Endpoints ---
 
 @app.post("/api/auth/register")
-def register(user_data: UserCreate, db: Session = Depends(get_db)):
+def register(response: Response, user_data: UserCreate, db: Session = Depends(get_db)):
     existing = db.query(User).filter(User.email == user_data.email).first()
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -148,7 +148,8 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     
     token = create_access_token({"sub": user.id})
-    return {"message": "Registration successful", "token": token}
+    response.set_cookie(key="access_token", value=token, httponly=True, max_age=60*60*24*30)
+    return {"message": "Registration successful", "token": token, "user": {"email": user.email, "name": user.name}}
 
 @app.post("/api/auth/login")
 def login(response: Response, user_data: UserLogin, db: Session = Depends(get_db)):

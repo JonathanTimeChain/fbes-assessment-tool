@@ -158,20 +158,22 @@ async function handleRegister(e) {
         const res = await fetch(`${API_BASE}/api/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ email, password, name, organization })
         });
         
         if (res.ok) {
-            // Auto-login after registration
-            await handleLogin({ preventDefault: () => {}, target: null });
-            document.getElementById('login-email').value = email;
-            document.getElementById('login-password').value = password;
-            await handleLogin({ preventDefault: () => {} });
+            const data = await res.json();
+            currentUser = data.user;
+            showAuthenticatedUI();
+            closeModal();
+            showPage('dashboard');
         } else {
             const data = await res.json();
             alert(data.detail || 'Registration failed');
         }
     } catch (e) {
+        console.error('Registration error:', e);
         alert('Registration failed');
     }
 }
@@ -264,7 +266,8 @@ async function handleCreateAssessment(e) {
             renderCategory();
         }
     } catch (e) {
-        alert('Failed to create assessment');
+        console.error('Create assessment error:', e);
+        alert('Failed to create assessment: ' + e.message);
     }
 }
 
