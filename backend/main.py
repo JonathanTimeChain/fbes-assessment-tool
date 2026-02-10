@@ -105,11 +105,24 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-def get_current_user(token: Optional[str] = Cookie(None, alias="access_token"), db: Session = Depends(get_db)):
-    if not token:
+from fastapi import Header
+
+def get_current_user(
+    authorization: Optional[str] = Header(None),
+    token: Optional[str] = Cookie(None, alias="access_token"), 
+    db: Session = Depends(get_db)
+):
+    # Try Bearer token first, then cookie
+    auth_token = None
+    if authorization and authorization.startswith("Bearer "):
+        auth_token = authorization[7:]
+    elif token:
+        auth_token = token
+    
+    if not auth_token:
         return None
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(auth_token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id: int = payload.get("sub")
         if user_id is None:
             return None

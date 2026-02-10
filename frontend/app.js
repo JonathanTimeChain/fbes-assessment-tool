@@ -9,6 +9,12 @@ let currentCategoryIndex = 0;
 let categoriesData = null;
 let assessmentResponses = {};
 
+// Auth token helper
+function getAuthHeaders() {
+    const token = localStorage.getItem('access_token');
+    return token ? { 'Authorization': `Bearer ${token}` } : {};
+}
+
 // DOM Elements
 const pages = {
     landing: document.getElementById('page-landing'),
@@ -27,11 +33,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // Auth check
 async function checkAuth() {
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+    
     try {
-        const res = await fetch(`${API_BASE}/api/auth/me`, { credentials: 'include' });
+        const res = await fetch(`${API_BASE}/api/auth/me`, { 
+            headers: getAuthHeaders()
+        });
         if (res.ok) {
             currentUser = await res.json();
             showAuthenticatedUI();
+        } else {
+            localStorage.removeItem('access_token');
         }
     } catch (e) {
         console.log('Not authenticated');
@@ -129,12 +142,12 @@ async function handleLogin(e) {
         const res = await fetch(`${API_BASE}/api/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
             body: JSON.stringify({ email, password })
         });
         
         if (res.ok) {
             const data = await res.json();
+            localStorage.setItem('access_token', data.token);
             currentUser = data.user;
             showAuthenticatedUI();
             closeModal();
@@ -158,12 +171,12 @@ async function handleRegister(e) {
         const res = await fetch(`${API_BASE}/api/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
             body: JSON.stringify({ email, password, name, organization })
         });
         
         if (res.ok) {
             const data = await res.json();
+            localStorage.setItem('access_token', data.token);
             currentUser = data.user;
             showAuthenticatedUI();
             closeModal();
@@ -179,7 +192,7 @@ async function handleRegister(e) {
 }
 
 async function logout() {
-    await fetch(`${API_BASE}/api/auth/logout`, { method: 'POST', credentials: 'include' });
+    localStorage.removeItem('access_token');
     currentUser = null;
     showUnauthenticatedUI();
     showPage('landing');
@@ -199,7 +212,7 @@ function showUnauthenticatedUI() {
 // Assessments
 async function loadAssessments() {
     try {
-        const res = await fetch(`${API_BASE}/api/assessments`, { credentials: 'include' });
+        const res = await fetch(`${API_BASE}/api/assessments`, { headers: getAuthHeaders() });
         if (res.ok) {
             const assessments = await res.json();
             renderAssessmentsList(assessments);
@@ -252,8 +265,7 @@ async function handleCreateAssessment(e) {
     try {
         const res = await fetch(`${API_BASE}/api/assessments`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
+            headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
             body: JSON.stringify(programInfo)
         });
         
@@ -277,7 +289,7 @@ async function handleCreateAssessment(e) {
 
 async function resumeAssessment(assessmentId) {
     try {
-        const res = await fetch(`${API_BASE}/api/assessments/${assessmentId}`, { credentials: 'include' });
+        const res = await fetch(`${API_BASE}/api/assessments/${assessmentId}`, { headers: getAuthHeaders() });
         if (res.ok) {
             const assessment = await res.json();
             currentAssessmentId = assessment.id;
@@ -367,8 +379,7 @@ async function saveProgress() {
     try {
         await fetch(`${API_BASE}/api/assessments/${currentAssessmentId}/responses`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
+            headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
             body: JSON.stringify(assessmentResponses)
         });
         alert('Progress saved!');
@@ -404,7 +415,7 @@ async function completeAssessment() {
     try {
         const res = await fetch(`${API_BASE}/api/assessments/${currentAssessmentId}/complete`, {
             method: 'POST',
-            credentials: 'include'
+            headers: getAuthHeaders()
         });
         
         if (res.ok) {
