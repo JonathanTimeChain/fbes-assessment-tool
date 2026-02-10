@@ -106,15 +106,19 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
+security = HTTPBearer(auto_error=False)
+
 def get_current_user(
-    authorization: Optional[str] = Header(None),
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security),
     token: Optional[str] = Cookie(None, alias="access_token"), 
     db: Session = Depends(get_db)
 ):
     # Try Bearer token first, then cookie
     auth_token = None
-    if authorization and authorization.startswith("Bearer "):
-        auth_token = authorization[7:]
+    if credentials:
+        auth_token = credentials.credentials
     elif token:
         auth_token = token
     
