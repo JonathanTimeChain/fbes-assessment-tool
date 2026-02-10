@@ -13,8 +13,8 @@ from fastapi.responses import HTMLResponse, FileResponse
 from pydantic import BaseModel, EmailStr
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
-from passlib.context import CryptContext
 from jose import JWTError, jwt
+import hashlib
 
 from models import Base, User, Assessment, AnalyticsEvent
 
@@ -30,8 +30,6 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base.metadata.create_all(bind=engine)
 
 # Password hashing (using sha256 for compatibility; upgrade to bcrypt in production)
-import hashlib
-
 class SimplePwdContext:
     def hash(self, password: str) -> str:
         return hashlib.sha256(password.encode()).hexdigest()
