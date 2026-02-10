@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FBES Self-Assessment Tool</title>
+    <!-- Fonts (matching FBES main site) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <h1>FBES</h1>
+                <span class="tagline">Self-Assessment Tool</span>
+            </div>
+            <nav id="nav-auth">
+                <button id="btn-login" class="btn btn-outline">Log In</button>
+                <button id="btn-register" class="btn btn-primary">Register</button>
+            </nav>
+            <nav id="nav-user" style="display: none;">
+                <span id="user-email"></span>
+                <button id="btn-logout" class="btn btn-outline">Log Out</button>
+            </nav>
+        </header>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Landing Page -->
+            <section id="page-landing" class="page active">
+                <div class="hero">
+                    <h2>Evaluate Your Bitcoin Education Curriculum</h2>
+                    <p>The FBES Self-Assessment Tool helps education providers measure their curriculum against rigorous standards before applying for formal endorsement.</p>
+                    <div class="hero-features">
+                        <div class="feature">
+                            <div class="feature-icon">📊</div>
+                            <h3>8 Categories</h3>
+                            <p>Comprehensive evaluation across technical accuracy, pedagogy, ethics, and more.</p>
+                        </div>
+                        <div class="feature">
+                            <div class="feature-icon">📋</div>
+                            <h3>50+ Questions</h3>
+                            <p>Detailed criteria aligned with FBES endorsement standards.</p>
+                        </div>
+                        <div class="feature">
+                            <div class="feature-icon">📈</div>
+                            <h3>Actionable Results</h3>
+                            <p>Receive a detailed report with prioritized recommendations.</p>
+                        </div>
+                    </div>
+                    <button id="btn-start-assessment" class="btn btn-primary btn-large">Start Assessment</button>
+                </div>
+            </section>
+
+            <!-- Auth Modal -->
+            <div id="modal-auth" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <div id="auth-login" class="auth-form">
+                        <h2>Log In</h2>
+                        <form id="form-login">
+                            <div class="form-group">
+                                <label for="login-email">Email</label>
+                                <input type="email" id="login-email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="login-password">Password</label>
+                                <input type="password" id="login-password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Log In</button>
+                            <p class="auth-switch">Don't have an account? <a href="#" id="show-register">Register</a></p>
+                        </form>
+                    </div>
+                    <div id="auth-register" class="auth-form" style="display: none;">
+                        <h2>Create Account</h2>
+                        <form id="form-register">
+                            <div class="form-group">
+                                <label for="register-email">Email</label>
+                                <input type="email" id="register-email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="register-password">Password</label>
+                                <input type="password" id="register-password" required minlength="8">
+                            </div>
+                            <div class="form-group">
+                                <label for="register-name">Name (optional)</label>
+                                <input type="text" id="register-name">
+                            </div>
+                            <div class="form-group">
+                                <label for="register-org">Organization (optional)</label>
+                                <input type="text" id="register-org">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Create Account</button>
+                            <p class="auth-switch">Already have an account? <a href="#" id="show-login">Log In</a></p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard -->
+            <section id="page-dashboard" class="page">
+                <h2>Your Assessments</h2>
+                <button id="btn-new-assessment" class="btn btn-primary">New Assessment</button>
+                <div id="assessments-list" class="assessments-list">
+                    <p class="empty-state">No assessments yet. Start your first one!</p>
+                </div>
+            </section>
+
+            <!-- New Assessment Form -->
+            <section id="page-new-assessment" class="page">
+                <h2>Start New Assessment</h2>
+                <form id="form-program-info">
+                    <div class="form-group">
+                        <label for="program-name">Program Name *</label>
+                        <input type="text" id="program-name" required placeholder="e.g., Bitcoin Fundamentals Course">
+                    </div>
+                    <div class="form-group">
+                        <label for="program-org">Organization</label>
+                        <input type="text" id="program-org" placeholder="e.g., Acme Education Inc.">
+                    </div>
+                    <div class="form-group">
+                        <label for="program-level">Program Level *</label>
+                        <select id="program-level" required>
+                            <option value="">Select level...</option>
+                            <option value="introductory">Introductory</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                            <option value="professional">Professional/Certification</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Target Audience (select all that apply)</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="audience" value="general"> General Public</label>
+                            <label><input type="checkbox" name="audience" value="students"> Students</label>
+                            <label><input type="checkbox" name="audience" value="professionals"> Professionals</label>
+                            <label><input type="checkbox" name="audience" value="developers"> Developers</label>
+                            <label><input type="checkbox" name="audience" value="finance"> Finance/Investment</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Delivery Format (select all that apply)</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="format" value="online-self"> Online Self-Paced</label>
+                            <label><input type="checkbox" name="format" value="online-live"> Online Live</label>
+                            <label><input type="checkbox" name="format" value="in-person"> In-Person</label>
+                            <label><input type="checkbox" name="format" value="hybrid"> Hybrid</label>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" onclick="showPage('dashboard')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Begin Assessment</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Assessment Questions -->
+            <section id="page-assessment" class="page">
+                <div class="assessment-header">
+                    <h2 id="category-title">Category Name</h2>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <span id="progress-text">Category 1 of 8</span>
+                </div>
+                <div id="questions-container" class="questions-container">
+                    <!-- Questions rendered here -->
+                </div>
+                <div class="assessment-nav">
+                    <button id="btn-prev-category" class="btn btn-outline">Previous</button>
+                    <button id="btn-save-progress" class="btn btn-outline">Save Progress</button>
+                    <button id="btn-next-category" class="btn btn-primary">Next Category</button>
+                </div>
+            </section>
+
+            <!-- Results -->
+            <section id="page-results" class="page">
+                <div class="results-header">
+                    <h2>Assessment Results</h2>
+                    <div class="overall-score" id="overall-score">
+                        <span class="score-number">75</span>
+                        <span class="score-label">Overall Score</span>
+                    </div>
+                    <div class="readiness-badge" id="readiness-badge">Ready for Review</div>
+                </div>
+                
+                <div class="results-section">
+                    <h3>Category Scores</h3>
+                    <div id="category-scores" class="category-scores">
+                        <!-- Category scores rendered here -->
+                    </div>
+                </div>
+                
+                <div class="results-section">
+                    <h3>Priority Recommendations</h3>
+                    <div id="recommendations" class="recommendations">
+                        <!-- Recommendations rendered here -->
+                    </div>
+                </div>
+                
+                <div class="results-actions">
+                    <button class="btn btn-outline" onclick="showPage('dashboard')">Back to Dashboard</button>
+                    <button class="btn btn-primary" onclick="window.print()">Download PDF</button>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Foundation for Bitcoin Educational Standards. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

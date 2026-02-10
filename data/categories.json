@@ -1,0 +1,366 @@
+{
+  "categories": [
+    {
+      "id": 1,
+      "name": "Technical Accuracy",
+      "weight": 0.20,
+      "description": "Evaluates whether the curriculum correctly explains Bitcoin's protocol mechanics, cryptographic foundations, network architecture, consensus mechanism, and transaction lifecycle.",
+      "questions": [
+        {
+          "id": "1.1",
+          "text": "Does the curriculum correctly explain the Bitcoin consensus mechanism (proof-of-work, longest chain rule, difficulty adjustment)?",
+          "guidance": "Look for accurate description of how miners compete to find valid blocks, why energy expenditure matters, and how difficulty adjusts every 2016 blocks.",
+          "impact": 1.0
+        },
+        {
+          "id": "1.2",
+          "text": "Does the curriculum accurately describe Bitcoin's cryptographic foundations (SHA-256, ECDSA/Schnorr signatures, hash functions)?",
+          "guidance": "Technical accuracy is essential. Check that the curriculum doesn't conflate encryption with hashing or make claims about 'unbreakable' security.",
+          "impact": 0.9
+        },
+        {
+          "id": "1.3",
+          "text": "Does the curriculum correctly explain how Bitcoin transactions work (inputs, outputs, UTXOs, scripts)?",
+          "guidance": "Look for accurate explanation of the UTXO model vs account model, transaction structure, and how change outputs work.",
+          "impact": 0.9
+        },
+        {
+          "id": "1.4",
+          "text": "Does the curriculum accurately describe the Bitcoin network architecture (nodes, miners, mempool, block propagation)?",
+          "guidance": "Check for distinction between full nodes, mining nodes, and SPV clients. Verify accurate description of how transactions propagate.",
+          "impact": 0.8
+        },
+        {
+          "id": "1.5",
+          "text": "Does the curriculum explain the 21 million supply cap correctly, including the halving schedule and subsidy mechanics?",
+          "guidance": "Verify accuracy of the halving schedule, block reward history, and the asymptotic approach to 21 million.",
+          "impact": 0.85
+        },
+        {
+          "id": "1.6",
+          "text": "Does the curriculum explicitly address and correct common technical misconceptions?",
+          "guidance": "Examples: 'Bitcoin is anonymous' (it's pseudonymous), 'transactions are instant' (requires confirmations), 'Bitcoin can be copied' (network effects).",
+          "impact": 0.7
+        },
+        {
+          "id": "1.7",
+          "text": "Are technical claims supported by references to primary sources (whitepaper, BIPs, Bitcoin Core documentation)?",
+          "guidance": "Quality curricula cite sources. Check for references to Satoshi's whitepaper, relevant BIPs, or developer documentation.",
+          "impact": 0.6
+        },
+        {
+          "id": "1.8",
+          "text": "Does the curriculum accurately explain key/address generation and the relationship between private keys, public keys, and addresses?",
+          "guidance": "Check for correct explanation of the derivation chain: private key → public key → address, and the role of hashing.",
+          "impact": 0.85
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Economic & Monetary Foundations",
+      "weight": 0.15,
+      "description": "Evaluates whether the curriculum situates Bitcoin within broader monetary history and economic theory.",
+      "questions": [
+        {
+          "id": "2.1",
+          "text": "Does the curriculum explain Bitcoin's monetary properties (scarcity, divisibility, portability, durability, fungibility)?",
+          "guidance": "These are the classic properties of money. Check that each is addressed and compared to traditional forms of money.",
+          "impact": 0.9
+        },
+        {
+          "id": "2.2",
+          "text": "Does the curriculum provide historical context for monetary systems (gold standard, Bretton Woods, fiat)?",
+          "guidance": "Bitcoin is best understood in historical context. Look for explanation of how we got to the current monetary system.",
+          "impact": 0.8
+        },
+        {
+          "id": "2.3",
+          "text": "Does the curriculum explain inflation, deflation, and how Bitcoin's fixed supply relates to these concepts?",
+          "guidance": "Check for accurate explanation of how monetary inflation differs from price inflation, and Bitcoin's disinflationary schedule.",
+          "impact": 0.85
+        },
+        {
+          "id": "2.4",
+          "text": "Does the curriculum present multiple economic perspectives fairly (Austrian, Keynesian, MMT)?",
+          "guidance": "Quality education doesn't require students to adopt a particular economic school. Check for balanced presentation.",
+          "impact": 0.6
+        },
+        {
+          "id": "2.5",
+          "text": "Does the curriculum explain the role of central banks and how Bitcoin differs from centrally-managed money?",
+          "guidance": "Look for explanation of monetary policy, quantitative easing, and why decentralization matters.",
+          "impact": 0.75
+        },
+        {
+          "id": "2.6",
+          "text": "Does the curriculum address Bitcoin's volatility honestly, including its causes and implications?",
+          "guidance": "Volatility is a legitimate concern. Check that it's addressed rather than dismissed or ignored.",
+          "impact": 0.7
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Completeness of Coverage",
+      "weight": 0.15,
+      "description": "Evaluates whether the curriculum covers all essential Bitcoin topics without significant gaps.",
+      "questions": [
+        {
+          "id": "3.1",
+          "text": "Does the curriculum cover Bitcoin's history and origin (cypherpunks, whitepaper, Satoshi, early development)?",
+          "guidance": "Understanding where Bitcoin came from provides essential context for why it was designed the way it was.",
+          "impact": 0.7
+        },
+        {
+          "id": "3.2",
+          "text": "Does the curriculum cover Bitcoin security practices (key management, wallet types, backup procedures)?",
+          "guidance": "Security is essential. Check for coverage of hot/cold wallets, seed phrases, and common security mistakes.",
+          "impact": 0.95
+        },
+        {
+          "id": "3.3",
+          "text": "Does the curriculum cover Bitcoin's scaling approaches (on-chain, Lightning Network, other Layer 2)?",
+          "guidance": "Scaling is a critical topic. Check for balanced coverage of different approaches and their tradeoffs.",
+          "impact": 0.75
+        },
+        {
+          "id": "3.4",
+          "text": "Does the curriculum cover regulatory and legal considerations relevant to the target audience?",
+          "guidance": "Learners need to understand the legal landscape. Check for coverage appropriate to the jurisdiction.",
+          "impact": 0.7
+        },
+        {
+          "id": "3.5",
+          "text": "Does the curriculum cover privacy considerations and Bitcoin's pseudonymous nature?",
+          "guidance": "Privacy is increasingly important. Check for coverage of chain analysis, privacy techniques, and tradeoffs.",
+          "impact": 0.7
+        },
+        {
+          "id": "3.6",
+          "text": "Does the curriculum address common risks (exchange failures, scams, user error, regulatory risk)?",
+          "guidance": "Honest education includes risks. Check that learners are warned about realistic dangers.",
+          "impact": 0.8
+        },
+        {
+          "id": "3.7",
+          "text": "Does the curriculum include practical exercises or hands-on components?",
+          "guidance": "Learning by doing is essential. Check for labs, exercises, or practical demonstrations.",
+          "impact": 0.65
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Pedagogical Quality",
+      "weight": 0.15,
+      "description": "Evaluates the teaching methodology and instructional design quality.",
+      "questions": [
+        {
+          "id": "4.1",
+          "text": "Does the curriculum have clearly stated learning objectives for each module/section?",
+          "guidance": "Good instructional design starts with clear objectives. Check that learners know what they'll be able to do after each section.",
+          "impact": 0.8
+        },
+        {
+          "id": "4.2",
+          "text": "Is content sequenced logically, building from foundational concepts to advanced topics?",
+          "guidance": "Check that prerequisites are taught before dependent concepts. Look for a clear learning progression.",
+          "impact": 0.85
+        },
+        {
+          "id": "4.3",
+          "text": "Does the curriculum use appropriate analogies and examples to explain complex concepts?",
+          "guidance": "Good teaching makes abstract concepts concrete. Check for relatable examples and accurate analogies.",
+          "impact": 0.7
+        },
+        {
+          "id": "4.4",
+          "text": "Does the curriculum include assessments or knowledge checks?",
+          "guidance": "Assessment helps learners gauge their understanding. Check for quizzes, exercises, or other evaluation methods.",
+          "impact": 0.75
+        },
+        {
+          "id": "4.5",
+          "text": "Is the curriculum appropriate for its stated audience and skill level?",
+          "guidance": "Introductory content shouldn't assume expert knowledge. Advanced content shouldn't oversimplify.",
+          "impact": 0.8
+        },
+        {
+          "id": "4.6",
+          "text": "Does the curriculum provide additional resources for deeper learning?",
+          "guidance": "Quality curricula point learners to primary sources, further reading, and community resources.",
+          "impact": 0.5
+        },
+        {
+          "id": "4.7",
+          "text": "Are instructors/content creators qualified and their credentials clearly stated?",
+          "guidance": "Learners deserve to know who is teaching them. Check for clear instructor information.",
+          "impact": 0.6
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Neutrality & Objectivity",
+      "weight": 0.10,
+      "description": "Evaluates whether the curriculum maintains educational neutrality vs. becoming advocacy.",
+      "questions": [
+        {
+          "id": "5.1",
+          "text": "Does the curriculum present Bitcoin's limitations and risks alongside its benefits?",
+          "guidance": "Education isn't advocacy. Check that drawbacks are honestly addressed, not hidden or dismissed.",
+          "impact": 0.9
+        },
+        {
+          "id": "5.2",
+          "text": "Does the curriculum avoid making price predictions or investment advice?",
+          "guidance": "Education should teach understanding, not promote speculation. Check for inappropriate financial advice.",
+          "impact": 0.85
+        },
+        {
+          "id": "5.3",
+          "text": "Does the curriculum fairly represent alternative viewpoints and critiques of Bitcoin?",
+          "guidance": "Learners should understand the strongest arguments against Bitcoin, not just strawman versions.",
+          "impact": 0.7
+        },
+        {
+          "id": "5.4",
+          "text": "Is the curriculum free from undisclosed commercial interests or conflicts of interest?",
+          "guidance": "Check for hidden promotion of specific products, services, or tokens. Sponsorships should be disclosed.",
+          "impact": 0.8
+        },
+        {
+          "id": "5.5",
+          "text": "Does the curriculum avoid tribal language or maximalist rhetoric that could alienate learners?",
+          "guidance": "Education should be welcoming. Check for dismissive language about other perspectives or technologies.",
+          "impact": 0.6
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Currency & Relevance",
+      "weight": 0.10,
+      "description": "Evaluates whether the curriculum is up-to-date and maintained.",
+      "questions": [
+        {
+          "id": "6.1",
+          "text": "Has the curriculum been updated within the last 12 months?",
+          "guidance": "Bitcoin evolves. Content older than 12 months may contain outdated information.",
+          "impact": 0.9
+        },
+        {
+          "id": "6.2",
+          "text": "Does the curriculum reflect current protocol features (Taproot, Schnorr signatures)?",
+          "guidance": "Major protocol upgrades should be covered. Check for post-2021 developments.",
+          "impact": 0.7
+        },
+        {
+          "id": "6.3",
+          "text": "Does the curriculum address current regulatory landscape accurately?",
+          "guidance": "Regulatory information changes rapidly. Check that guidance reflects current reality.",
+          "impact": 0.75
+        },
+        {
+          "id": "6.4",
+          "text": "Is there a documented process for ongoing content review and updates?",
+          "guidance": "Sustainable quality requires maintenance. Check for update schedules or review processes.",
+          "impact": 0.6
+        },
+        {
+          "id": "6.5",
+          "text": "Does the curriculum reference current market conditions, adoption metrics, and ecosystem developments?",
+          "guidance": "Context matters. Check that examples and data are reasonably current.",
+          "impact": 0.5
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Accessibility & Inclusion",
+      "weight": 0.10,
+      "description": "Evaluates whether the curriculum is accessible to diverse learners.",
+      "questions": [
+        {
+          "id": "7.1",
+          "text": "Is the curriculum available in multiple formats (text, video, audio)?",
+          "guidance": "Different learners have different needs. Check for format variety.",
+          "impact": 0.6
+        },
+        {
+          "id": "7.2",
+          "text": "Does the curriculum meet basic accessibility standards (screen reader compatible, captions, etc.)?",
+          "guidance": "Check for WCAG compliance, video captions, alt text, and keyboard navigation.",
+          "impact": 0.8
+        },
+        {
+          "id": "7.3",
+          "text": "Is the curriculum available in multiple languages or designed for translation?",
+          "guidance": "Bitcoin is global. Check for language accessibility beyond English.",
+          "impact": 0.5
+        },
+        {
+          "id": "7.4",
+          "text": "Are technical prerequisites clearly stated so learners can self-assess readiness?",
+          "guidance": "Learners shouldn't discover they're unprepared mid-course. Check for clear prerequisites.",
+          "impact": 0.7
+        },
+        {
+          "id": "7.5",
+          "text": "Is the curriculum priced accessibly or are scholarships/free tiers available?",
+          "guidance": "Cost can be a barrier. Check for accessibility options for resource-constrained learners.",
+          "impact": 0.5
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Ethical Standards",
+      "weight": 0.05,
+      "description": "Evaluates whether the curriculum upholds ethical obligations in education.",
+      "questions": [
+        {
+          "id": "8.1",
+          "text": "Does the curriculum emphasize the importance of securing private keys and never sharing them?",
+          "guidance": "This is a fundamental security principle. Check that it's prominently emphasized.",
+          "impact": 0.95
+        },
+        {
+          "id": "8.2",
+          "text": "Does the curriculum warn against common scams and social engineering attacks?",
+          "guidance": "Learners are vulnerable to scams. Check for warnings about phishing, fake support, Ponzi schemes.",
+          "impact": 0.85
+        },
+        {
+          "id": "8.3",
+          "text": "Does the curriculum respect learner privacy and avoid unnecessary data collection?",
+          "guidance": "Privacy should be practiced, not just taught. Check the provider's data practices.",
+          "impact": 0.7
+        },
+        {
+          "id": "8.4",
+          "text": "Does the curriculum avoid promoting specific commercial products without disclosure?",
+          "guidance": "Undisclosed affiliate relationships or product placements undermine trust.",
+          "impact": 0.75
+        },
+        {
+          "id": "8.5",
+          "text": "Does the curriculum encourage responsible and legal use of Bitcoin?",
+          "guidance": "Education should not facilitate illegal activity. Check for appropriate guidance.",
+          "impact": 0.6
+        }
+      ]
+    }
+  ],
+  "scoring": {
+    "yes": 2,
+    "partial": 1,
+    "no": 0,
+    "thresholds": {
+      "ready": 75,
+      "promising": 50,
+      "needs_work": 0
+    }
+  }
+}
