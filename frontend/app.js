@@ -1,138 +1,114 @@
-// FBES Self-Assessment Tool - Frontend Application
+/**
+ * FBES Self-Assessment Tool
+ * Frontend Application
+ * 
+ * Responses are stored in localStorage until assessment completion,
+ * then sent to backend in a single request.
+ */
 
 const API_BASE = '';
 
 // State
 let currentUser = null;
-let currentAssessmentId = null;
-let currentCategoryIndex = 0;
 let categoriesData = null;
-let assessmentResponses = {};
+let currentCategoryIndex = 0;
+let currentAssessmentId = null;
+let assessmentResponses = {};  // Stored in localStorage
 
-// Auth token helper
-function getAuthHeaders() {
-    const token = localStorage.getItem('access_token');
-    return token ? { 'Authorization': `Bearer ${token}` } : {};
-}
+// ==========================================
+// INITIALIZATION
+// ==========================================
 
-// DOM Elements
-const pages = {
-    landing: document.getElementById('page-landing'),
-    dashboard: document.getElementById('page-dashboard'),
-    newAssessment: document.getElementById('page-new-assessment'),
-    assessment: document.getElementById('page-assessment'),
-    results: document.getElementById('page-results')
-};
-
-// Initialize
-document.addEventListener('DOMContentLoaded', async () => {
-    await checkAuth();
-    await loadCategories();
+document.addEventListener('DOMContentLoaded', () => {
+    loadCategories();
+    checkAuth();
     setupEventListeners();
 });
 
-// Auth check
-async function checkAuth() {
-    const token = localStorage.getItem('access_token');
-    if (!token) return;
-    
-    try {
-        const res = await fetch(`${API_BASE}/api/auth/me`, { 
-            headers: getAuthHeaders()
-        });
-        if (res.ok) {
-            currentUser = await res.json();
-            showAuthenticatedUI();
-        } else {
-            localStorage.removeItem('access_token');
-        }
-    } catch (e) {
-        console.log('Not authenticated');
-    }
-}
-
-// Load categories data
 async function loadCategories() {
     try {
         const res = await fetch(`${API_BASE}/api/categories`);
-        categoriesData = await res.json();
+        if (res.ok) {
+            categoriesData = await res.json();
+        }
     } catch (e) {
         console.error('Failed to load categories:', e);
     }
 }
 
-// Event Listeners
 function setupEventListeners() {
     // Auth buttons
-    document.getElementById('btn-login').addEventListener('click', () => showModal('login'));
-    document.getElementById('btn-register').addEventListener('click', () => showModal('register'));
-    document.getElementById('btn-logout').addEventListener('click', logout);
-    document.getElementById('show-register').addEventListener('click', (e) => {
+    document.getElementById('btn-login')?.addEventListener('click', () => showModal('auth'));
+    document.getElementById('btn-register')?.addEventListener('click', () => showModal('auth'));
+    document.getElementById('btn-logout')?.addEventListener('click', logout);
+    
+    // Auth forms
+    document.getElementById('form-login')?.addEventListener('submit', handleLogin);
+    document.getElementById('form-register')?.addEventListener('submit', handleRegister);
+    document.getElementById('show-register')?.addEventListener('click', (e) => {
         e.preventDefault();
-        toggleAuthForm('register');
+        document.getElementById('auth-login').style.display = 'none';
+        document.getElementById('auth-register').style.display = 'block';
     });
-    document.getElementById('show-login').addEventListener('click', (e) => {
+    document.getElementById('show-login')?.addEventListener('click', (e) => {
         e.preventDefault();
-        toggleAuthForm('login');
+        document.getElementById('auth-register').style.display = 'none';
+        document.getElementById('auth-login').style.display = 'block';
     });
     
     // Modal close
-    document.querySelector('.modal .close').addEventListener('click', closeModal);
-    document.getElementById('modal-auth').addEventListener('click', (e) => {
-        if (e.target.id === 'modal-auth') closeModal();
+    document.querySelectorAll('.close').forEach(el => {
+        el.addEventListener('click', () => hideModal());
     });
     
-    // Auth forms
-    document.getElementById('form-login').addEventListener('submit', handleLogin);
-    document.getElementById('form-register').addEventListener('submit', handleRegister);
-    
     // Start assessment
-    document.getElementById('btn-start-assessment').addEventListener('click', () => {
-        if (currentUser) {
-            showPage('dashboard');
+    document.getElementById('btn-start')?.addEventListener('click', () => {
+        if (!currentUser) {
+            showModal('auth');
         } else {
-            showModal('register');
+            showPage('program-info');
         }
     });
     
-    // Dashboard
-    document.getElementById('btn-new-assessment').addEventListener('click', () => showPage('newAssessment'));
+    // Program info form
+    document.getElementById('form-program-info')?.addEventListener('submit', handleCreateAssessment);
     
-    // New assessment form
-    document.getElementById('form-program-info').addEventListener('submit', handleCreateAssessment);
-    
-    // Assessment navigation
-    document.getElementById('btn-prev-category').addEventListener('click', prevCategory);
-    document.getElementById('btn-next-category').addEventListener('click', nextCategory);
-    document.getElementById('btn-save-progress').addEventListener('click', saveProgress);
+    // New assessment from dashboard
+    document.getElementById('btn-new-assessment')?.addEventListener('click', () => showPage('program-info'));
 }
 
-// Page navigation
-function showPage(pageName) {
-    Object.values(pages).forEach(p => p.classList.remove('active'));
-    pages[pageName].classList.add('active');
+// ==========================================
+// AUTHENTICATION
+// ==========================================
+
+function checkAuth() {
+    const token = localStorage.getItem('fbes_token');
+    const userStr = localStorage.getItem('fbes_user');
     
-    if (pageName === 'dashboard') {
-        loadAssessments();
+    if (token && userStr) {
+        try {
+            currentUser = JSON.parse(userStr);
+            updateNavForUser();
+        } catch (e) {
+            localStorage.removeItem('fbes_token');
+            localStorage.removeItem('fbes_user');
+        }
     }
 }
 
-// Modal
-function showModal(type) {
-    document.getElementById('modal-auth').style.display = 'flex';
-    toggleAuthForm(type);
+function getAuthHeaders() {
+    const token = localStorage.getItem('fbes_token');
+    return token ? { 'Authorization': `Bearer ${token}` } : {};
 }
 
-function closeModal() {
-    document.getElementById('modal-auth').style.display = 'none';
+function updateNavForUser() {
+    document.getElementById('nav-guest').style.display = currentUser ? 'none' : 'flex';
+    document.getElementById('nav-user').style.display = currentUser ? 'flex' : 'none';
+    if (currentUser) {
+        document.getElementById('user-email').textContent = currentUser.email;
+    }
 }
 
-function toggleAuthForm(type) {
-    document.getElementById('auth-login').style.display = type === 'login' ? 'block' : 'none';
-    document.getElementById('auth-register').style.display = type === 'register' ? 'block' : 'none';
-}
-
-// Auth handlers
 async function handleLogin(e) {
     e.preventDefault();
     const email = document.getElementById('login-email').value;
@@ -147,16 +123,19 @@ async function handleLogin(e) {
         
         if (res.ok) {
             const data = await res.json();
-            localStorage.setItem('access_token', data.token);
+            localStorage.setItem('fbes_token', data.token);
+            localStorage.setItem('fbes_user', JSON.stringify(data.user));
             currentUser = data.user;
-            showAuthenticatedUI();
-            closeModal();
+            updateNavForUser();
+            hideModal();
             showPage('dashboard');
+            loadAssessments();
         } else {
-            alert('Invalid credentials');
+            const err = await res.json().catch(() => ({}));
+            alert(err.detail || 'Login failed');
         }
     } catch (e) {
-        alert('Login failed');
+        alert('Login failed: ' + e.message);
     }
 }
 
@@ -165,68 +144,84 @@ async function handleRegister(e) {
     const email = document.getElementById('register-email').value;
     const password = document.getElementById('register-password').value;
     const name = document.getElementById('register-name').value;
-    const organization = document.getElementById('register-org').value;
     
     try {
         const res = await fetch(`${API_BASE}/api/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password, name, organization })
+            body: JSON.stringify({ email, password, name })
         });
         
         if (res.ok) {
             const data = await res.json();
-            localStorage.setItem('access_token', data.token);
+            localStorage.setItem('fbes_token', data.token);
+            localStorage.setItem('fbes_user', JSON.stringify(data.user));
             currentUser = data.user;
-            showAuthenticatedUI();
-            closeModal();
+            updateNavForUser();
+            hideModal();
             showPage('dashboard');
+            loadAssessments();
         } else {
-            const data = await res.json();
-            alert(data.detail || 'Registration failed');
+            const err = await res.json().catch(() => ({}));
+            alert(err.detail || 'Registration failed');
         }
     } catch (e) {
-        console.error('Registration error:', e);
-        alert('Registration failed');
+        alert('Registration failed: ' + e.message);
     }
 }
 
-async function logout() {
-    localStorage.removeItem('access_token');
+function logout() {
+    localStorage.removeItem('fbes_token');
+    localStorage.removeItem('fbes_user');
     currentUser = null;
-    showUnauthenticatedUI();
+    updateNavForUser();
     showPage('landing');
 }
 
-function showAuthenticatedUI() {
-    document.getElementById('nav-auth').style.display = 'none';
-    document.getElementById('nav-user').style.display = 'flex';
-    document.getElementById('user-email').textContent = currentUser.email;
+// ==========================================
+// PAGE NAVIGATION
+// ==========================================
+
+function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(`page-${pageId}`)?.classList.add('active');
+    window.scrollTo(0, 0);
 }
 
-function showUnauthenticatedUI() {
-    document.getElementById('nav-auth').style.display = 'flex';
-    document.getElementById('nav-user').style.display = 'none';
+function showModal(modalId) {
+    document.getElementById(`modal-${modalId}`).style.display = 'flex';
 }
 
-// Assessments
+function hideModal() {
+    document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+}
+
+// ==========================================
+// DASHBOARD
+// ==========================================
+
 async function loadAssessments() {
     try {
         const res = await fetch(`${API_BASE}/api/assessments`, { headers: getAuthHeaders() });
         if (res.ok) {
             const assessments = await res.json();
-            renderAssessmentsList(assessments);
+            renderAssessments(assessments);
         }
     } catch (e) {
         console.error('Failed to load assessments:', e);
     }
 }
 
-function renderAssessmentsList(assessments) {
-    const container = document.getElementById('assessments-list');
+function renderAssessments(assessments) {
+    const container = document.getElementById('assessments-container');
     
-    if (assessments.length === 0) {
-        container.innerHTML = '<p class="empty-state">No assessments yet. Start your first one!</p>';
+    if (!assessments || assessments.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <p>You haven't started any assessments yet.</p>
+                <button class="btn btn-primary" onclick="showPage('program-info')">Start Your First Assessment</button>
+            </div>
+        `;
         return;
     }
     
@@ -234,22 +229,24 @@ function renderAssessmentsList(assessments) {
         <div class="assessment-card">
             <div>
                 <h3>${a.program_name}</h3>
-                <p class="meta">
-                    ${a.status === 'completed' ? 'Completed' : 'In Progress'} · 
-                    ${new Date(a.updated_at).toLocaleDateString()}
-                </p>
+                <div class="meta">
+                    ${a.status === 'completed' ? 'Completed' : 'In Progress'} • 
+                    ${new Date(a.created_at).toLocaleDateString()}
+                </div>
             </div>
-            <div style="display: flex; align-items: center; gap: 15px;">
+            <div>
                 ${a.status === 'completed' 
-                    ? `<span class="score">${a.overall_score}%</span>` 
-                    : ''}
-                <button class="btn btn-outline" onclick="resumeAssessment(${a.id})">
-                    ${a.status === 'completed' ? 'View Results' : 'Continue'}
-                </button>
+                    ? `<span class="score">${Math.round(a.overall_score)}%</span>` 
+                    : `<button class="btn btn-secondary" onclick="resumeAssessment(${a.id})">Continue</button>`
+                }
             </div>
         </div>
     `).join('');
 }
+
+// ==========================================
+// ASSESSMENT CREATION
+// ==========================================
 
 async function handleCreateAssessment(e) {
     e.preventDefault();
@@ -273,16 +270,18 @@ async function handleCreateAssessment(e) {
             const data = await res.json();
             currentAssessmentId = data.id;
             currentCategoryIndex = 0;
+            
+            // Initialize fresh responses in localStorage
             assessmentResponses = {};
+            saveResponsesToLocalStorage();
+            
             showPage('assessment');
             renderCategory();
         } else {
             const errData = await res.json().catch(() => ({}));
-            console.error('Create assessment failed:', res.status, errData);
             alert('Failed to create assessment: ' + (errData.detail || res.statusText));
         }
     } catch (e) {
-        console.error('Create assessment error:', e);
         alert('Failed to create assessment: ' + e.message);
     }
 }
@@ -293,7 +292,17 @@ async function resumeAssessment(assessmentId) {
         if (res.ok) {
             const assessment = await res.json();
             currentAssessmentId = assessment.id;
-            assessmentResponses = assessment.responses || {};
+            
+            // Load responses from localStorage if available, otherwise from server
+            const localKey = `fbes_responses_${assessmentId}`;
+            const localData = localStorage.getItem(localKey);
+            
+            if (localData) {
+                assessmentResponses = JSON.parse(localData);
+            } else {
+                assessmentResponses = assessment.responses || {};
+                saveResponsesToLocalStorage();
+            }
             
             if (assessment.status === 'completed') {
                 showResults(assessment);
@@ -308,7 +317,28 @@ async function resumeAssessment(assessmentId) {
     }
 }
 
-// Question rendering
+// ==========================================
+// LOCAL STORAGE FOR RESPONSES
+// ==========================================
+
+function saveResponsesToLocalStorage() {
+    if (currentAssessmentId) {
+        const key = `fbes_responses_${currentAssessmentId}`;
+        localStorage.setItem(key, JSON.stringify(assessmentResponses));
+    }
+}
+
+function clearLocalResponses() {
+    if (currentAssessmentId) {
+        const key = `fbes_responses_${currentAssessmentId}`;
+        localStorage.removeItem(key);
+    }
+}
+
+// ==========================================
+// QUESTION RENDERING
+// ==========================================
+
 function renderCategory() {
     if (!categoriesData) return;
     
@@ -317,29 +347,33 @@ function renderCategory() {
     
     // Update header
     document.getElementById('category-title').textContent = category.name;
+    document.getElementById('category-description').textContent = category.description;
+    document.getElementById('category-weight').textContent = `Weight: ${Math.round(category.weight * 100)}%`;
     document.getElementById('progress-text').textContent = `Category ${currentCategoryIndex + 1} of ${totalCategories}`;
     document.getElementById('progress-fill').style.width = `${((currentCategoryIndex + 1) / totalCategories) * 100}%`;
     
+    // Get existing responses for this category
+    const catId = String(category.id);
+    const catResponses = assessmentResponses[catId] || {};
+    
     // Render questions
     const container = document.getElementById('questions-container');
-    const catResponses = assessmentResponses[category.id] || {};
-    
     container.innerHTML = category.questions.map((q, idx) => {
         const response = catResponses[q.id] || {};
         return `
             <div class="question-card">
-                <h4>${idx + 1}. ${q.text}</h4>
-                <p class="question-guidance">${q.guidance}</p>
+                <h4><span class="question-number">${q.id}</span> ${q.text}</h4>
+                ${q.guidance ? `<p class="question-guidance">${q.guidance}</p>` : ''}
                 <div class="answer-options">
                     <div class="answer-option">
-                        <input type="radio" name="q-${q.id}" id="q-${q.id}-yes" value="yes" 
+                        <input type="radio" name="q-${q.id}" id="q-${q.id}-yes" value="yes"
                             ${response.answer === 'yes' ? 'checked' : ''}>
                         <label for="q-${q.id}-yes">Yes</label>
                     </div>
                     <div class="answer-option">
                         <input type="radio" name="q-${q.id}" id="q-${q.id}-partial" value="partial"
                             ${response.answer === 'partial' ? 'checked' : ''}>
-                        <label for="q-${q.id}-partial">Partially</label>
+                        <label for="q-${q.id}-partial">Partial</label>
                     </div>
                     <div class="answer-option">
                         <input type="radio" name="q-${q.id}" id="q-${q.id}-no" value="no"
@@ -352,15 +386,16 @@ function renderCategory() {
     }).join('');
     
     // Update nav buttons
-    document.getElementById('btn-prev-category').style.display = currentCategoryIndex === 0 ? 'none' : 'block';
-    document.getElementById('btn-next-category').textContent = 
-        currentCategoryIndex === totalCategories - 1 ? 'Complete Assessment' : 'Next Category';
+    document.getElementById('btn-prev').style.visibility = currentCategoryIndex === 0 ? 'hidden' : 'visible';
+    const nextBtn = document.getElementById('btn-next');
+    nextBtn.textContent = currentCategoryIndex === totalCategories - 1 ? 'Complete Assessment' : 'Next Category →';
 }
 
 function collectCurrentResponses() {
     if (!categoriesData) return;
     
     const category = categoriesData.categories[currentCategoryIndex];
+    const catId = String(category.id);
     const catResponses = {};
     
     category.questions.forEach(q => {
@@ -370,22 +405,8 @@ function collectCurrentResponses() {
         }
     });
     
-    assessmentResponses[category.id] = catResponses;
-}
-
-async function saveProgress() {
-    collectCurrentResponses();
-    
-    try {
-        await fetch(`${API_BASE}/api/assessments/${currentAssessmentId}/responses`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
-            body: JSON.stringify(assessmentResponses)
-        });
-        alert('Progress saved!');
-    } catch (e) {
-        alert('Failed to save progress');
-    }
+    assessmentResponses[catId] = catResponses;
+    saveResponsesToLocalStorage();
 }
 
 function prevCategory() {
@@ -399,20 +420,38 @@ function prevCategory() {
 
 async function nextCategory() {
     collectCurrentResponses();
-    await saveProgress();
     
     if (currentCategoryIndex < categoriesData.categories.length - 1) {
         currentCategoryIndex++;
         renderCategory();
         window.scrollTo(0, 0);
     } else {
-        // Complete assessment
+        // Complete assessment - send all responses to backend
         await completeAssessment();
     }
 }
 
+// ==========================================
+// ASSESSMENT COMPLETION
+// ==========================================
+
 async function completeAssessment() {
+    // Collect final responses
+    collectCurrentResponses();
+    
+    const btn = document.getElementById('btn-next');
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+    
     try {
+        // First, save all responses to backend
+        await fetch(`${API_BASE}/api/assessments/${currentAssessmentId}/responses`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+            body: JSON.stringify(assessmentResponses)
+        });
+        
+        // Then complete the assessment
         const res = await fetch(`${API_BASE}/api/assessments/${currentAssessmentId}/complete`, {
             method: 'POST',
             headers: getAuthHeaders()
@@ -420,12 +459,24 @@ async function completeAssessment() {
         
         if (res.ok) {
             const results = await res.json();
+            clearLocalResponses();  // Clean up localStorage
             showResults(results);
+        } else {
+            const err = await res.json().catch(() => ({}));
+            alert('Failed to complete assessment: ' + (err.detail || 'Unknown error'));
+            btn.disabled = false;
+            btn.textContent = 'Complete Assessment';
         }
     } catch (e) {
-        alert('Failed to complete assessment');
+        alert('Failed to complete assessment: ' + e.message);
+        btn.disabled = false;
+        btn.textContent = 'Complete Assessment';
     }
 }
+
+// ==========================================
+// RESULTS DISPLAY
+// ==========================================
 
 function showResults(results) {
     showPage('results');
@@ -434,39 +485,59 @@ function showResults(results) {
     document.querySelector('.score-number').textContent = Math.round(results.overall_score);
     
     // Readiness badge
+    const readiness = results.readiness || (results.overall_score >= 75 ? 'ready' : (results.overall_score >= 50 ? 'promising' : 'needs_work'));
     const badge = document.getElementById('readiness-badge');
-    badge.className = 'readiness-badge ' + results.readiness;
-    badge.textContent = results.readiness === 'ready' ? 'Ready for FBES Review' 
-        : results.readiness === 'promising' ? 'Promising - Some Improvements Needed'
-        : 'Needs Significant Work';
+    badge.className = 'readiness-badge ' + readiness;
+    badge.textContent = readiness === 'ready' 
+        ? 'Ready for FBES Review' 
+        : (readiness === 'promising' ? 'Promising — Minor Gaps' : 'Needs Development');
     
     // Category scores
     const catContainer = document.getElementById('category-scores');
-    catContainer.innerHTML = Object.entries(results.category_scores).map(([id, data]) => `
+    const categoryScores = results.category_scores || {};
+    
+    catContainer.innerHTML = Object.entries(categoryScores).map(([id, data]) => `
         <div class="category-score-card">
             <h4>${data.name}</h4>
             <div class="score-bar">
                 <div class="score-fill ${data.status}" style="width: ${data.raw_score}%"></div>
             </div>
-            <span class="score-text">${data.raw_score}%</span>
+            <span class="score-text">${data.raw_score}% (${data.status})</span>
         </div>
     `).join('');
     
     // Recommendations
-    const recContainer = document.getElementById('recommendations');
-    if (results.recommendations && results.recommendations.length > 0) {
-        recContainer.innerHTML = results.recommendations.map(r => `
+    const recsContainer = document.getElementById('recommendations');
+    const recommendations = results.recommendations || [];
+    
+    if (recommendations.length === 0) {
+        recsContainer.innerHTML = '<p style="color: var(--gray-400);">No recommendations — your curriculum meets all FBES criteria!</p>';
+    } else {
+        recsContainer.innerHTML = recommendations.map(rec => `
             <div class="recommendation-card">
-                <span class="category-tag">${r.category}</span>
-                <h4>${r.question}</h4>
-                <p>${r.guidance}</p>
+                <span class="category-tag">${rec.category}</span>
+                <p class="question-text">${rec.question}</p>
+                ${rec.guidance ? `<p class="guidance">${rec.guidance}</p>` : ''}
             </div>
         `).join('');
-    } else {
-        recContainer.innerHTML = '<p class="empty-state">No recommendations - your curriculum looks great!</p>';
     }
 }
 
-// Make functions available globally for onclick handlers
-window.showPage = showPage;
+function backToDashboard() {
+    showPage('dashboard');
+    loadAssessments();
+}
+
+function startNewAssessment() {
+    showPage('program-info');
+    // Reset form
+    document.getElementById('form-program-info')?.reset();
+}
+
+// Make functions globally available
+window.prevCategory = prevCategory;
+window.nextCategory = nextCategory;
 window.resumeAssessment = resumeAssessment;
+window.backToDashboard = backToDashboard;
+window.startNewAssessment = startNewAssessment;
+window.showPage = showPage;
