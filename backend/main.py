@@ -13,6 +13,7 @@ from fastapi.responses import HTMLResponse, FileResponse
 from pydantic import BaseModel, EmailStr
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm.attributes import flag_modified
 from jose import JWTError, jwt
 import hashlib
 
@@ -272,10 +273,11 @@ def update_responses(assessment_id: int, responses: Dict[str, Dict[str, Any]], d
     if not assessment:
         raise HTTPException(status_code=404, detail="Assessment not found")
     
-    # Merge new responses with existing
+    # Merge new responses with existing (create new dict to trigger SQLAlchemy change detection)
     current = assessment.responses or {}
-    current.update(responses)
-    assessment.responses = current
+    merged = {**current, **responses}
+    assessment.responses = merged
+    flag_modified(assessment, "responses")  # Explicitly mark JSON column as modified
     assessment.updated_at = datetime.utcnow()
     db.commit()
     
