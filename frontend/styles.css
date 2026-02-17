@@ -1,8 +1,14 @@
 /* FBES Self-Assessment Tool Styles */
 
 :root {
-    --primary: #1a365d;
-    --primary-light: #2c5282;
+    /* FBES Navy Palette */
+    --navy-900: #0a1628;
+    --navy-800: #0f2041;
+    --navy-700: #152d54;
+    --navy-600: #1b3a68;
+    
+    --primary: #0a1628;
+    --primary-light: #152d54;
     --accent: #c9a84c;
     --accent-hover: #b8933a;
     --success: #38a169;
@@ -30,9 +36,11 @@
 
 body {
     font-family: var(--font-body);
-    background: var(--gray-50);
-    color: var(--gray-900);
+    background: linear-gradient(135deg, var(--navy-900) 0%, var(--navy-800) 50%, var(--navy-700) 100%);
+    background-attachment: fixed;
+    color: var(--gray-100);
     line-height: 1.6;
+    min-height: 100vh;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -51,20 +59,21 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 20px 0;
-    border-bottom: 1px solid var(--gray-200);
-    background: var(--white);
+    border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+    background: rgba(10, 22, 40, 0.95);
+    backdrop-filter: blur(10px);
     margin-bottom: 40px;
 }
 
 .logo h1 {
     font-size: 1.8rem;
-    color: var(--primary);
+    color: var(--accent);
     font-weight: 700;
 }
 
 .logo .tagline {
     font-size: 0.9rem;
-    color: var(--gray-500);
+    color: var(--gray-300);
     display: block;
 }
 
@@ -101,13 +110,13 @@ nav {
 
 .btn-outline {
     background: transparent;
-    border: 2px solid var(--primary);
-    color: var(--primary);
+    border: 2px solid var(--accent);
+    color: var(--accent);
 }
 
 .btn-outline:hover {
-    background: var(--primary);
-    color: var(--white);
+    background: var(--accent);
+    color: var(--navy-900);
 }
 
 .btn-large {
@@ -132,13 +141,13 @@ nav {
 
 .hero h2 {
     font-size: 2.5rem;
-    color: var(--primary);
+    color: var(--white);
     margin-bottom: 20px;
 }
 
 .hero > p {
     font-size: 1.2rem;
-    color: var(--gray-700);
+    color: var(--gray-300);
     max-width: 700px;
     margin: 0 auto 40px;
 }
@@ -151,10 +160,11 @@ nav {
 }
 
 .feature {
-    background: var(--white);
+    background: rgba(255, 255, 255, 0.05);
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid rgba(201, 168, 76, 0.15);
+    backdrop-filter: blur(10px);
 }
 
 .feature-icon {
@@ -163,12 +173,12 @@ nav {
 }
 
 .feature h3 {
-    color: var(--primary);
+    color: var(--accent);
     margin-bottom: 10px;
 }
 
 .feature p {
-    color: var(--gray-500);
+    color: var(--gray-300);
 }
 
 /* Modal */
@@ -186,12 +196,13 @@ nav {
 }
 
 .modal-content {
-    background: var(--white);
+    background: linear-gradient(135deg, var(--navy-900) 0%, var(--navy-800) 100%);
     padding: 40px;
     border-radius: 12px;
     width: 100%;
     max-width: 400px;
     position: relative;
+    border: 1px solid rgba(201, 168, 76, 0.2);
 }
 
 .close {
@@ -200,7 +211,7 @@ nav {
     right: 20px;
     font-size: 1.5rem;
     cursor: pointer;
-    color: var(--gray-500);
+    color: var(--gray-300);
 }
 
 .auth-form h2 {
@@ -285,22 +296,22 @@ nav {
 }
 
 .assessment-card {
-    background: var(--white);
+    background: rgba(255, 255, 255, 0.05);
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border: 1px solid rgba(201, 168, 76, 0.15);
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .assessment-card h3 {
-    color: var(--primary);
+    color: var(--white);
     margin-bottom: 5px;
 }
 
 .assessment-card .meta {
-    color: var(--gray-500);
+    color: var(--gray-400);
     font-size: 0.9rem;
 }
 
@@ -313,7 +324,7 @@ nav {
 .empty-state {
     text-align: center;
     padding: 40px;
-    color: var(--gray-500);
+    color: var(--gray-400);
 }
 
 /* Assessment Questions */
@@ -323,12 +334,12 @@ nav {
 
 .assessment-header h2 {
     margin-bottom: 15px;
-    color: var(--primary);
+    color: var(--white);
 }
 
 .progress-bar {
     height: 8px;
-    background: var(--gray-200);
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 4px;
     overflow: hidden;
     margin-bottom: 10px;
@@ -341,7 +352,7 @@ nav {
 }
 
 #progress-text {
-    color: var(--gray-500);
+    color: var(--gray-400);
     font-size: 0.9rem;
 }
 
@@ -351,24 +362,24 @@ nav {
 }
 
 .question-card {
-    background: var(--white);
+    background: rgba(255, 255, 255, 0.05);
     padding: 25px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border: 1px solid rgba(201, 168, 76, 0.12);
 }
 
 .question-card h4 {
-    color: var(--gray-900);
+    color: var(--white);
     margin-bottom: 10px;
     font-size: 1.05rem;
 }
 
 .question-guidance {
-    color: var(--gray-500);
+    color: var(--gray-400);
     font-size: 0.9rem;
     margin-bottom: 15px;
     padding-left: 15px;
-    border-left: 3px solid var(--gray-200);
+    border-left: 3px solid var(--accent);
 }
 
 .answer-options {
@@ -389,21 +400,22 @@ nav {
 .answer-option label {
     display: block;
     padding: 12px 20px;
-    border: 2px solid var(--gray-200);
+    border: 2px solid rgba(255, 255, 255, 0.2);
     border-radius: 6px;
     text-align: center;
     cursor: pointer;
     transition: all 0.2s;
+    color: var(--gray-200);
 }
 
 .answer-option input:checked + label {
-    border-color: var(--primary);
-    background: var(--primary);
-    color: var(--white);
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--navy-900);
 }
 
 .answer-option label:hover {
-    border-color: var(--primary-light);
+    border-color: var(--accent);
 }
 
 .assessment-nav {
@@ -411,7 +423,7 @@ nav {
     justify-content: space-between;
     margin-top: 40px;
     padding-top: 20px;
-    border-top: 1px solid var(--gray-200);
+    border-top: 1px solid rgba(201, 168, 76, 0.2);
 }
 
 /* Results */
@@ -468,10 +480,10 @@ nav {
 }
 
 .results-section h3 {
-    color: var(--primary);
+    color: var(--accent);
     margin-bottom: 20px;
     padding-bottom: 10px;
-    border-bottom: 2px solid var(--gray-200);
+    border-bottom: 2px solid rgba(201, 168, 76, 0.3);
 }
 
 .category-scores {
@@ -481,20 +493,20 @@ nav {
 }
 
 .category-score-card {
-    background: var(--white);
+    background: rgba(255, 255, 255, 0.05);
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border: 1px solid rgba(201, 168, 76, 0.12);
 }
 
 .category-score-card h4 {
     margin-bottom: 10px;
-    color: var(--gray-700);
+    color: var(--white);
 }
 
 .category-score-card .score-bar {
     height: 10px;
-    background: var(--gray-200);
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 5px;
     overflow: hidden;
     margin-bottom: 8px;
@@ -512,7 +524,7 @@ nav {
 
 .category-score-card .score-text {
     font-weight: 600;
-    color: var(--gray-700);
+    color: var(--gray-200);
 }
 
 .recommendations {
@@ -521,20 +533,20 @@ nav {
 }
 
 .recommendation-card {
-    background: var(--white);
+    background: rgba(255, 255, 255, 0.05);
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border: 1px solid rgba(201, 168, 76, 0.12);
     border-left: 4px solid var(--accent);
 }
 
 .recommendation-card .category-tag {
     display: inline-block;
-    background: var(--gray-100);
+    background: rgba(201, 168, 76, 0.15);
     padding: 4px 10px;
     border-radius: 4px;
     font-size: 0.8rem;
-    color: var(--gray-500);
+    color: var(--accent);
     margin-bottom: 10px;
 }
 
